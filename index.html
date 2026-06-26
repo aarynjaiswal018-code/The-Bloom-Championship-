@@ -252,7 +252,7 @@ nav{position:sticky;top:0;z-index:200;background:rgba(13,10,26,0.9);backdrop-fil
     <button class="tab-btn" onclick="switchTab('bracket')">🏆 Bracket</button>
     <button class="tab-btn" onclick="switchTab('schedule')">📅 Events</button>
     <button class="tab-btn" onclick="switchTab('teams')">👥 Teams</button>
-    <button class="tab-btn" onclick="switchTab('organizer')" style="color:#f472b6">⚙ Organizer</button>
+    <button class="tab-btn" onclick="openOrganizer()" style="color:#f472b6">⚙ Organizer</button>
   </div>
 
   <!-- REGISTER -->
@@ -658,6 +658,17 @@ function renderOrgPanel(){
   document.getElementById('org-teams-list').innerHTML=teams.map((t,i)=>`<div class="org-item"><span class="ilabel">${t.name}<span class="imeta">${t.captain}</span></span><button class="btn-outline small danger" onclick="removeTeam(${i})">✕</button></div>`).join('')||'<div style="color:var(--muted);font-size:0.78rem">No teams yet.</div>';
   // events
   document.getElementById('org-events-list').innerHTML=events.map((e,i)=>`<div class="org-item"><span class="ilabel">${e.name}<span class="imeta">${e.type}</span></span><button class="btn-outline small danger" onclick="removeEvent(${i})">✕</button></div>`).join('');
+}
+
+
+let organizerUnlocked=false;
+function openOrganizer(){
+ if(!organizerUnlocked){
+   const pw=prompt('Enter organizer password:');
+   if(pw!=='MeloGop'){toast('Incorrect password');return;}
+   organizerUnlocked=true;
+ }
+ switchTab('organizer');
 }
 
 // ──── INIT ────
