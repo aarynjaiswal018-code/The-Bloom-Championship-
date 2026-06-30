@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bloom Championship — Mobile Legends 5v5</title>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Exo+2:wght@300;400;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0d0a1a;
+  --surface: #13112b;
+  --surface2: #1a1735;
+  --bloom: #d8b4fe;
+  --bloom2: #a855f7;
+  --bloom3: #7c3aed;
+  --pink: #f472b6;
+  --gold: #fbbf24;
+  --cyan: #67e8f9;
+  --green: #34d399;
+  --red: #f87171;
+  --text: #f1e8ff;
+  --muted: #7c6ea0;
+  --border: #2a2250;
+  --border2: #3d3070;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:'Exo 2',sans-serif;min-height:100vh;overflow-x:hidden}
+
+/* floating petals bg */
+.petals-bg{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+.petal{position:absolute;border-radius:50% 0 50% 0;opacity:0.08;animation:floatPetal linear infinite}
+@keyframes floatPetal{0%{transform:translateY(-60px) rotate(0deg);opacity:0}10%{opacity:0.12}90%{opacity:0.06}100%{transform:translateY(110vh) rotate(360deg);opacity:0}}
+
+/* NAV */
+nav{position:sticky;top:0;z-index:200;background:rgba(13,10,26,0.9);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 1.5rem;height:58px}
+.nav-logo{font-family:'Rajdhani',sans-serif;font-size:1.35rem;font-weight:700;background:linear-gradient(135deg,var(--bloom),var(--pink));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:2px;text-transform:uppercase}
+.nav-right{display:flex;align-items:center;gap:1rem}
+.nav-links{display:flex;gap:1rem}
+.nav-links a{color:var(--muted);text-decoration:none;font-size:0.8rem;font-weight:600;letter-spacing:1px;text-transform:uppercase;transition:color 0.2s}
+.nav-links a:hover{color:var(--bloom)}
+.yt-nav-btn{display:flex;align-items:center;gap:0.4rem;background:#ff0000;color:#fff;padding:0.3rem 0.8rem;border-radius:20px;font-size:0.75rem;font-weight:700;text-decoration:none;letter-spacing:0.5px;transition:opacity 0.2s}
+.yt-nav-btn:hover{opacity:0.85}
+
+/* HERO */
+.hero{position:relative;z-index:1;min-height:480px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:5rem 1.5rem 3rem;overflow:hidden}
+.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 70% 50% at 50% -10%,rgba(168,85,247,0.25) 0%,transparent 65%),radial-gradient(ellipse 40% 30% at 80% 80%,rgba(244,114,182,0.12) 0%,transparent 50%)}
+.hero-eyebrow{font-family:'Share Tech Mono',monospace;font-size:0.7rem;color:var(--cyan);letter-spacing:4px;text-transform:uppercase;margin-bottom:1.2rem;opacity:0.9}
+.hero h1{font-family:'Rajdhani',sans-serif;font-size:clamp(3rem,9vw,6.5rem);font-weight:700;line-height:0.9;text-transform:uppercase;letter-spacing:3px;color:#fff}
+.hero h1 .bloom-word{background:linear-gradient(135deg,var(--bloom) 0%,var(--pink) 60%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;filter:drop-shadow(0 0 30px rgba(216,180,254,0.4))}
+.hero-sub{margin-top:0.8rem;font-size:0.95rem;color:var(--muted);font-weight:400;letter-spacing:1px}
+.hero-yt-link{margin-top:1.5rem;display:inline-flex;align-items:center;gap:0.6rem;background:rgba(255,0,0,0.15);border:1px solid rgba(255,80,80,0.3);color:#ff8080;padding:0.5rem 1.2rem;border-radius:25px;text-decoration:none;font-size:0.85rem;font-weight:600;transition:all 0.2s}
+.hero-yt-link:hover{background:rgba(255,0,0,0.25);color:#ffaaaa}
+.hero-yt-link .yt-icon{font-size:1.1rem}
+
+/* COUNTDOWN */
+.countdown-section{position:relative;z-index:1;padding:1.5rem 1.5rem 2.5rem;display:flex;justify-content:center}
+.countdown-card{background:linear-gradient(135deg,rgba(124,58,237,0.15),rgba(244,114,182,0.08));border:1px solid var(--border2);border-radius:16px;padding:1.5rem 2.5rem;text-align:center;max-width:600px;width:100%}
+.countdown-label{font-family:'Share Tech Mono',monospace;font-size:0.65rem;letter-spacing:4px;text-transform:uppercase;color:var(--bloom);margin-bottom:1rem;opacity:0.8}
+.countdown-display{display:flex;align-items:center;justify-content:center;gap:0.5rem;flex-wrap:wrap}
+.cd-unit{display:flex;flex-direction:column;align-items:center}
+.cd-num{font-family:'Rajdhani',sans-serif;font-size:clamp(2.5rem,7vw,4rem);font-weight:700;color:#fff;line-height:1;background:linear-gradient(135deg,var(--bloom),var(--pink));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;min-width:70px;text-align:center}
+.cd-lbl{font-size:0.6rem;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-top:0.2rem}
+.cd-sep{font-family:'Rajdhani',sans-serif;font-size:2.5rem;color:var(--bloom);opacity:0.4;margin-bottom:12px}
+.cd-event-name{font-size:0.8rem;color:var(--muted);margin-top:0.8rem}
+.cd-event-name b{color:var(--text)}
+
+/* PRIZE POOL */
+.prize-section{position:relative;z-index:1;padding:0 1.5rem 3rem;max-width:1000px;margin:0 auto}
+.prize-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:1rem}
+.prize-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1.5rem 1rem;text-align:center;transition:transform 0.2s,border-color 0.2s;position:relative;overflow:hidden}
+.prize-card:hover{transform:translateY(-3px);border-color:var(--border2)}
+.prize-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--bloom3),var(--pink))}
+.prize-card.gold-card::before{background:linear-gradient(90deg,#fbbf24,#f59e0b)}
+.prize-card.silver-card::before{background:linear-gradient(90deg,#94a3b8,#cbd5e1)}
+.prize-card.bronze-card::before{background:linear-gradient(90deg,#b45309,#d97706)}
+.prize-rank{font-size:1.8rem;margin-bottom:0.4rem}
+.prize-place{font-family:'Rajdhani',sans-serif;font-size:0.8rem;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:var(--muted);margin-bottom:0.5rem}
+.prize-amount{font-family:'Rajdhani',sans-serif;font-size:1.5rem;font-weight:700;color:var(--gold)}
+.prize-desc{font-size:0.72rem;color:var(--muted);margin-top:0.3rem}
+
+/* MAIN TABS */
+.main-section{position:relative;z-index:1;padding:0 1.5rem 4rem;max-width:1100px;margin:0 auto}
+.section-label{font-family:'Share Tech Mono',monospace;font-size:0.65rem;letter-spacing:4px;text-transform:uppercase;color:var(--bloom);margin-bottom:0.4rem;opacity:0.8}
+.section-title{font-family:'Rajdhani',sans-serif;font-size:clamp(1.5rem,4vw,2.2rem);font-weight:700;color:#fff;text-transform:uppercase;letter-spacing:2px;margin-bottom:1.8rem}
+.tabs{display:flex;gap:0;border-bottom:1px solid var(--border);margin-bottom:2.5rem;overflow-x:auto}
+.tab-btn{background:none;border:none;cursor:pointer;padding:0.7rem 1.3rem;font-family:'Exo 2',sans-serif;font-size:0.82rem;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--muted);border-bottom:2px solid transparent;transition:all 0.2s;position:relative;top:1px;white-space:nowrap}
+.tab-btn.active{color:var(--bloom);border-bottom-color:var(--bloom)}
+.tab-btn:hover:not(.active){color:var(--text)}
+.tab-panel{display:none}
+.tab-panel.active{display:block}
+
+/* FORM COMPONENTS */
+.form-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1.8rem;display:grid;grid-template-columns:1fr 1fr;gap:1.1rem}
+.form-card .full{grid-column:1/-1}
+.field label{display:block;font-size:0.7rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:0.4rem}
+.field input,.field select,.field textarea{width:100%;background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:0.6rem 0.85rem;font-family:'Exo 2',sans-serif;font-size:0.88rem;border-radius:7px;outline:none;transition:border-color 0.2s}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--bloom2)}
+.field select option{background:var(--surface2)}
+.field textarea{resize:vertical;min-height:75px}
+.player-row{display:grid;grid-template-columns:1fr 1fr auto;gap:0.5rem;align-items:end}
+.players-section{grid-column:1/-1}
+.players-section h3{font-family:'Rajdhani',sans-serif;font-size:0.9rem;text-transform:uppercase;letter-spacing:2px;color:var(--bloom);margin-bottom:0.7rem}
+#players-list{display:flex;flex-direction:column;gap:0.5rem}
+
+/* BUTTONS */
+.btn-primary{background:linear-gradient(135deg,var(--bloom3),var(--bloom2));color:#fff;border:none;padding:0.7rem 1.5rem;border-radius:8px;font-family:'Rajdhani',sans-serif;font-size:1rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;cursor:pointer;box-shadow:0 0 20px rgba(124,58,237,0.3);transition:all 0.2s;width:100%}
+.btn-primary:hover{box-shadow:0 0 30px rgba(168,85,247,0.5);transform:translateY(-1px)}
+.btn-outline{background:none;border:1px solid var(--border2);color:var(--bloom);padding:0.45rem 1rem;border-radius:6px;cursor:pointer;font-family:'Rajdhani',sans-serif;font-size:0.85rem;font-weight:600;letter-spacing:1px;text-transform:uppercase;transition:all 0.2s}
+.btn-outline:hover{background:var(--bloom2);border-color:var(--bloom2);color:#fff}
+.btn-outline.gold{border-color:var(--gold);color:var(--gold)}
+.btn-outline.gold:hover{background:var(--gold);color:#000}
+.btn-outline.danger{border-color:var(--red);color:var(--red)}
+.btn-outline.danger:hover{background:var(--red);color:#fff}
+.btn-outline.small{padding:0.3rem 0.6rem;font-size:0.75rem}
+.btn-add{background:none;border:1px dashed var(--border2);color:var(--muted);padding:0.4rem 0.9rem;border-radius:6px;cursor:pointer;font-size:0.8rem;font-family:'Exo 2',sans-serif;transition:all 0.2s}
+.btn-add:hover{border-color:var(--cyan);color:var(--cyan)}
+
+/* BRACKET */
+.bracket-controls{display:flex;gap:0.7rem;margin-bottom:1.2rem;flex-wrap:wrap;align-items:center}
+.bracket-controls input{background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:0.45rem 0.8rem;border-radius:6px;font-family:'Exo 2',sans-serif;font-size:0.85rem;outline:none;flex:1;min-width:160px}
+.bracket-teams-pool{display:flex;flex-wrap:wrap;gap:0.5rem;margin-bottom:1.2rem}
+.pool-tag{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:0.25rem 0.8rem;font-size:0.75rem;color:var(--text);display:flex;align-items:center;gap:0.4rem;cursor:pointer;transition:all 0.2s}
+.pool-tag:hover{border-color:var(--red);color:var(--red)}
+.bracket-wrap{overflow-x:auto;padding-bottom:1rem}
+.bracket{display:flex;align-items:stretch;min-width:500px}
+.round{display:flex;flex-direction:column;flex:1}
+.round-label{font-family:'Share Tech Mono',monospace;font-size:0.6rem;letter-spacing:3px;text-transform:uppercase;color:var(--muted);text-align:center;padding:0.4rem 0.3rem 0.8rem}
+.round-matches{display:flex;flex-direction:column;justify-content:space-around;flex:1;gap:0.4rem;padding:0 0.3rem}
+.match{background:var(--surface);border:1px solid var(--border);border-radius:8px;overflow:hidden;transition:border-color 0.2s;min-width:130px}
+.match:hover{border-color:var(--border2)}
+.match-team{display:flex;align-items:center;justify-content:space-between;padding:0.4rem 0.65rem;font-size:0.75rem;font-weight:600;cursor:pointer;transition:background 0.15s;border-bottom:1px solid var(--border)}
+.match-team:last-child{border-bottom:none}
+.match-team:hover{background:var(--surface2)}
+.match-team.winner{background:rgba(168,85,247,0.15);color:var(--bloom)}
+.match-team.tbd{color:var(--muted);font-style:italic}
+.team-score{font-family:'Share Tech Mono',monospace;font-size:0.8rem;color:var(--gold);min-width:14px;text-align:right}
+
+/* SCHEDULE */
+.event-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1rem}
+.event-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1.2rem;transition:border-color 0.2s,transform 0.2s;position:relative;overflow:hidden}
+.event-card:hover{border-color:var(--border2);transform:translateY(-2px)}
+.event-card-stripe{position:absolute;top:0;left:0;right:0;height:3px}
+.event-type-label{font-family:'Share Tech Mono',monospace;font-size:0.62rem;letter-spacing:3px;text-transform:uppercase;margin-bottom:0.4rem}
+.event-card h3{font-family:'Rajdhani',sans-serif;font-size:1.05rem;font-weight:700;color:#fff;text-transform:uppercase;letter-spacing:1px;margin-bottom:0.3rem}
+.event-card p{font-size:0.8rem;color:var(--muted);line-height:1.5}
+.event-meta{display:flex;gap:0.8rem;margin-top:0.8rem;flex-wrap:wrap}
+.event-meta span{font-size:0.72rem;color:var(--muted);display:flex;align-items:center;gap:0.25rem}
+.event-meta span b{color:var(--text)}
+
+/* TEAMS */
+.teams-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:0.8rem}
+.team-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:1.1rem;transition:border-color 0.2s}
+.team-card:hover{border-color:var(--border2)}
+.team-card .tname{font-family:'Rajdhani',sans-serif;font-size:1rem;font-weight:700;text-transform:uppercase;color:var(--bloom);letter-spacing:1px;margin-bottom:0.5rem}
+.team-card .pnames{font-size:0.73rem;color:var(--muted);line-height:1.7}
+
+/* ORGANIZER PANEL */
+.org-panel{background:rgba(124,58,237,0.06);border:1px solid var(--border2);border-radius:16px;padding:2rem;margin-top:2rem}
+.org-panel-header{display:flex;align-items:center;gap:0.8rem;margin-bottom:1.5rem}
+.org-panel-header h2{font-family:'Rajdhani',sans-serif;font-size:1.4rem;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:var(--bloom)}
+.org-lock-badge{background:var(--surface2);border:1px solid var(--border2);border-radius:20px;padding:0.2rem 0.7rem;font-size:0.7rem;font-family:'Share Tech Mono',monospace;color:var(--muted);letter-spacing:1px}
+.org-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem}
+.org-block{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:1.2rem}
+.org-block h3{font-family:'Rajdhani',sans-serif;font-size:0.95rem;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:var(--text);margin-bottom:1rem;display:flex;align-items:center;gap:0.5rem}
+.org-block h3 .icon{font-size:1rem}
+.org-row{display:flex;gap:0.5rem;margin-bottom:0.7rem;align-items:center;flex-wrap:wrap}
+.org-row input,.org-row select{flex:1;min-width:100px;background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:0.45rem 0.7rem;border-radius:6px;font-family:'Exo 2',sans-serif;font-size:0.83rem;outline:none}
+.org-row input:focus,.org-row select:focus{border-color:var(--bloom2)}
+.org-item-list{display:flex;flex-direction:column;gap:0.5rem}
+.org-item{display:flex;align-items:center;justify-content:space-between;background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:0.45rem 0.8rem;font-size:0.8rem}
+.org-item .ilabel{color:var(--text)}
+.org-item .imeta{color:var(--muted);font-size:0.72rem;margin-left:0.5rem}
+.org-full{grid-column:1/-1}
+
+/* TOAST */
+#toast{position:fixed;bottom:2rem;right:2rem;z-index:999;background:linear-gradient(135deg,var(--bloom3),var(--bloom2));color:#fff;padding:0.7rem 1.3rem;border-radius:10px;font-size:0.88rem;font-weight:600;box-shadow:0 0 24px rgba(124,58,237,0.4);opacity:0;transform:translateY(10px);transition:all 0.3s;pointer-events:none}
+#toast.show{opacity:1;transform:translateY(0)}
+
+/* DIVIDER */
+.divider{width:100%;height:1px;background:linear-gradient(to right,transparent,var(--border),transparent);margin:0 auto}
+
+@media(max-width:700px){
+  .form-card,.org-grid{grid-template-columns:1fr}
+  .form-card .full,.org-grid .org-full{grid-column:1/-1}
+  .player-row{grid-template-columns:1fr}
+  .nav-links{display:none}
+  .countdown-card{padding:1rem 1rem}
+  .cd-num{font-size:2.2rem;min-width:50px}
+}
+</style>
+</head>
+<body>
+
+<!-- Floating petals -->
+<div class="petals-bg" id="petals-bg"></div>
+
+<nav>
+  <div class="nav-logo">🌸 Bloom Champ</div>
+  <div class="nav-right">
+    <div class="nav-links">
+      <a href="#" onclick="switchTab('register');return false">Register</a>
+      <a href="#" onclick="switchTab('bracket');return false">Bracket</a>
+      <a href="#" onclick="switchTab('schedule');return false">Events</a>
+    </div>
+    <a class="yt-nav-btn" id="yt-nav-link" href="https://youtube.com" target="_blank">▶ Subscribe</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-eyebrow">Mobile Legends 5v5 · Official Tournament</div>
+  <h1><span class="bloom-word">Bloom</span><br>Championship</h1>
+  <p class="hero-sub" id="hero-sub-text">Presented by your favorite content creator · Season 1</p>
+  <a class="hero-yt-link" id="hero-yt-link" href="https://youtube.com" target="_blank">
+    <span class="yt-icon">▶</span> <span id="hero-yt-label">Watch on YouTube · 5K Subscribers!</span>
+  </a>
+</div>
+
+<!-- COUNTDOWN -->
+<div class="countdown-section">
+  <div class="countdown-card">
+    <div class="countdown-label">// Tournament starts in</div>
+    <div class="countdown-display">
+      <div class="cd-unit"><div class="cd-num" id="cd-days">00</div><div class="cd-lbl">Days</div></div>
+      <div class="cd-sep">:</div>
+      <div class="cd-unit"><div class="cd-num" id="cd-hours">00</div><div class="cd-lbl">Hours</div></div>
+      <div class="cd-sep">:</div>
+      <div class="cd-unit"><div class="cd-num" id="cd-mins">00</div><div class="cd-lbl">Mins</div></div>
+      <div class="cd-sep">:</div>
+      <div class="cd-unit"><div class="cd-num" id="cd-secs">00</div><div class="cd-lbl">Secs</div></div>
+    </div>
+    <div class="cd-event-name">Next event: <b id="cd-event-name">Bloom Championship Grand Day</b></div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- PRIZE POOL -->
+<div class="prize-section" style="padding-top:2.5rem">
+  <div class="section-label">// Prizes</div>
+  <div class="section-title">Prize Pool</div>
+  <div class="prize-grid" id="prize-grid"></div>
+</div>
+
+<div class="divider" style="margin:2.5rem auto;max-width:1000px"></div>
+
+<!-- MAIN TABS -->
+<div class="main-section">
+  <div class="section-label">// Navigate</div>
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('register')">📋 Register</button>
+    <button class="tab-btn" onclick="switchTab('bracket')">🏆 Bracket</button>
+    <button class="tab-btn" onclick="switchTab('schedule')">📅 Events</button>
+    <button class="tab-btn" onclick="switchTab('teams')">👥 Teams</button>
+    <button class="tab-btn" onclick="openOrganizer()" style="color:#f472b6">⚙ Organizer</button>
+  </div>
+
+  <!-- REGISTER -->
+  <div class="tab-panel active" id="tab-register">
+    <div class="section-title">Team Registration</div>
+    <div class="form-card">
+      <div class="field"><label>Team Name</label><input id="reg-team" type="text" placeholder="e.g. Nova Reborn"></div>
+      <div class="field"><label>Captain's IGN</label><input id="reg-captain" type="text" placeholder="Your in-game name"></div>
+      <div class="field"><label>Contact (Discord / Social)</label><input id="reg-contact" type="text" placeholder="discord#0000"></div>
+      <div class="field"><label>Server / Region</label>
+        <select id="reg-server"><option value="">Select server</option><option>Southeast Asia</option><option>Philippines</option><option>Indonesia</option><option>Malaysia</option><option>Other</option></select>
+      </div>
+      <div class="players-section full">
+        <h3>Player Roster (up to 5)</h3>
+        <div id="players-list">
+          <div class="player-row">
+            <div class="field"><label>Player IGN</label><input type="text" placeholder="Player 1 IGN" class="ign"></div>
+            <div class="field"><label>Role</label><select class="role"><option>Gold</option><option>EXP</option><option>Mid</option><option>Jungler</option><option>Roamer</option></select></div>
+            <button class="btn-add" onclick="removePlayer(this)" style="margin-bottom:0">✕</button>
+          </div>
+        </div>
+        <button class="btn-add" onclick="addPlayer()" style="margin-top:0.6rem">+ Add Player</button>
+      </div>
+      <div class="field full"><label>Note to organizer</label><textarea id="reg-note" placeholder="Any additional info..."></textarea></div>
+      <button class="btn-primary full" onclick="submitRegistration()">⚔ Submit Registration</button>
+    </div>
+  </div>
+
+  <!-- BRACKET -->
+  <div class="tab-panel" id="tab-bracket">
+    <div class="section-title">Tournament Bracket</div>
+    <div class="bracket-wrap"><div class="bracket" id="bracket-container">
+      <div style="color:var(--muted);font-size:0.85rem;padding:2rem 0;text-align:center;width:100%">Add teams then click <b style="color:var(--bloom)">Generate</b> to build the draw.</div>
+    </div></div>
+  </div>
+
+  <!-- SCHEDULE -->
+  <div class="tab-panel" id="tab-schedule">
+    <div class="section-title">Event Schedule</div>
+    <div class="event-grid" id="event-grid"></div>
+  </div>
+
+  <!-- TEAMS -->
+  <div class="tab-panel" id="tab-teams">
+    <div class="section-title">Registered Teams</div>
+    <div class="teams-grid" id="teams-list"><div style="color:var(--muted);font-size:0.85rem">No teams registered yet.</div></div>
+  </div>
+
+  <!-- ORGANIZER -->
+  <div class="tab-panel" id="tab-organizer">
+    <div class="section-title">Organizer Panel</div>
+    <div class="org-panel">
+      <div class="org-panel-header">
+        <h2>⚙ Control Center</h2>
+        <span class="org-lock-badge">ORGANIZER ONLY</span>
+      </div>
+      <div class="org-grid">
+
+        <!-- YouTube Settings -->
+        <div class="org-block">
+          <h3><span class="icon">▶</span> YouTube Channel</h3>
+          <div class="org-row">
+            <input id="org-yt-url" type="text" placeholder="YouTube channel URL" value="https://youtube.com">
+            <button class="btn-outline small" onclick="saveYT()">Save</button>
+          </div>
+          <div class="org-row">
+            <input id="org-yt-label" type="text" placeholder="Button label" value="Watch on YouTube · 5K Subscribers!">
+            <button class="btn-outline small" onclick="saveYTLabel()">Save</button>
+          </div>
+        </div>
+
+        <!-- Countdown Settings -->
+        <div class="org-block">
+          <h3><span class="icon">⏰</span> Countdown Timer</h3>
+          <div class="org-row">
+            <input id="org-cd-date" type="datetime-local">
+            <button class="btn-outline small" onclick="saveCountdown()">Set</button>
+          </div>
+          <div class="org-row">
+            <input id="org-cd-name" type="text" placeholder="Event name for countdown" value="Bloom Championship Grand Day">
+            <button class="btn-outline small" onclick="saveCDName()">Save</button>
+          </div>
+        </div>
+
+        <!-- Hero subtitle -->
+        <div class="org-block">
+          <h3><span class="icon">✏️</span> Hero Subtitle</h3>
+          <div class="org-row">
+            <input id="org-hero-sub" type="text" placeholder="Subtitle under the title" value="Presented by your favorite content creator · Season 1">
+            <button class="btn-outline small" onclick="saveHeroSub()">Save</button>
+          </div>
+        </div>
+
+        <!-- Prize Pool -->
+        <div class="org-block">
+          <h3><span class="icon">🏆</span> Prize Pool</h3>
+          <div id="org-prizes-list" class="org-item-list"></div>
+          <div class="org-row" style="margin-top:0.8rem">
+            <input id="org-prize-place" type="text" placeholder="Place (e.g. 1st Place 🥇)">
+            <input id="org-prize-amount" type="text" placeholder="Prize (e.g. ₱5,000)">
+            <input id="org-prize-desc" type="text" placeholder="Note (e.g. + Trophy)">
+            <button class="btn-outline small" onclick="addPrize()">Add</button>
+          </div>
+        </div>
+
+        <!-- Manage Announcements -->
+        <div class="org-block org-full">
+          <h3><span class="icon">📢</span> Announcements / Notes</h3>
+          <div id="org-announce-list" class="org-item-list" style="margin-bottom:0.8rem"></div>
+          <div class="org-row">
+            <input id="org-announce-text" type="text" placeholder="Add announcement or rule...">
+            <button class="btn-outline small" onclick="addAnnouncement()">Add</button>
+          </div>
+        </div>
+
+        <!-- Remove Teams -->
+        <div class="org-block">
+          <h3><span class="icon">👥</span> Manage Registered Teams</h3>
+          <div id="org-teams-list" class="org-item-list"></div>
+          <p style="font-size:0.72rem;color:var(--muted);margin-top:0.5rem">Click ✕ to remove a team.</p>
+        </div>
+
+        <!-- Bracket Generator -->
+        <div class="org-block org-full">
+          <h3><span class="icon">🏆</span> Bracket Generator</h3>
+          <div class="bracket-controls">
+            <input type="text" id="manual-team" placeholder="Add team to bracket...">
+            <button class="btn-outline" onclick="addTeamToBracket()">+ Add Team</button>
+            <button class="btn-outline gold" onclick="generateBracket()">⚡ Generate</button>
+            <button class="btn-outline danger" onclick="resetBracket()">↺ Reset</button>
+          </div>
+          <div class="bracket-teams-pool" id="bracket-teams-pool"></div>
+          <p style="font-size:0.72rem;color:var(--muted);margin-top:0.3rem">Click a team chip to remove it from the pool. Generated bracket appears on the public Bracket tab.</p>
+        </div>
+
+        <!-- Add Event -->
+        <div class="org-block org-full">
+          <h3><span class="icon">📅</span> Add Event</h3>
+          <div class="form-card" style="padding:0;border:none;background:none">
+            <div class="field"><label>Event Name</label><input id="ev-name" type="text" placeholder="e.g. 1v1 Showdown"></div>
+            <div class="field"><label>Type</label>
+              <select id="ev-type"><option>Side Event</option><option>Main Match</option><option>Opening Ceremony</option><option>Prize Distribution</option><option>Fun Event</option></select>
+            </div>
+            <div class="field"><label>Date</label><input id="ev-date" type="date"></div>
+            <div class="field"><label>Time</label><input id="ev-time" type="time"></div>
+            <div class="field full"><label>Description</label><input id="ev-desc" type="text" placeholder="Brief description..."></div>
+            <button class="btn-outline full" onclick="addEvent()" style="padding:0.65rem">+ Add to Schedule</button>
+          </div>
+        </div>
+
+        <!-- Remove Events -->
+        <div class="org-block">
+          <h3><span class="icon">📅</span> Manage Events</h3>
+          <div id="org-events-list" class="org-item-list"></div>
+          <p style="font-size:0.72rem;color:var(--muted);margin-top:0.5rem">Click ✕ to remove an event.</p>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Announcements bar (shown if any) -->
+<div id="announce-bar" style="display:none;position:fixed;bottom:0;left:0;right:0;z-index:150;background:linear-gradient(90deg,var(--bloom3),var(--bloom2));padding:0.5rem 1.5rem;font-size:0.82rem;font-weight:600;text-align:center;color:#fff"></div>
+
+<div id="toast"></div>
+
+<script>
+// ──── STATE ────
+let ytUrl = 'https://youtube.com';
+let ytLabel = 'Watch on YouTube · 5K Subscribers!';
+let heroSub = 'Presented by your favorite content creator · Season 1';
+let countdownTarget = null;
+let cdEventName = 'Bloom Championship Grand Day';
+let prizes = [
+  {place:'1st Place 🥇',amount:'₱5,000',desc:'+ Champion Trophy',type:'gold'},
+  {place:'2nd Place 🥈',amount:'₱2,500',desc:'+ Medals',type:'silver'},
+  {place:'3rd Place 🥉',amount:'₱1,000',desc:'+ Medals',type:'bronze'},
+  {place:'Best MVP 🌟',amount:'₱500',desc:'+ Special Award',type:'bloom'}
+];
+let events = [
+  {name:'Opening Ceremony',type:'Opening Ceremony',date:'',time:'10:00',desc:'Welcome, rules briefing, and bracket reveal.'},
+  {name:'1v1 Marksman Challenge',type:'Side Event',date:'',time:'11:00',desc:'Who has the best CS? Compete in a 1v1 lane duel.'},
+  {name:'Fastest KDA Round',type:'Fun Event',date:'',time:'12:30',desc:'Most kills in 5 minutes wins a special prize.'},
+  {name:'Prize Distribution',type:'Prize Distribution',date:'',time:'18:00',desc:'Champions crowned, prizes given, group photo.'}
+];
+let teams = [];
+let bracketTeams = [];
+let bracketState = [];
+let announcements = [];
+let playerCount = 1;
+
+// ──── PETALS ────
+(function(){
+  const bg = document.getElementById('petals-bg');
+  const colors = ['#d8b4fe','#f472b6','#a855f7','#c084fc','#fb7185'];
+  for(let i=0;i<18;i++){
+    const p = document.createElement('div');
+    p.className='petal';
+    const size = 10+Math.random()*20;
+    p.style.cssText=`width:${size}px;height:${size}px;left:${Math.random()*100}%;background:${colors[i%colors.length]};animation-duration:${8+Math.random()*12}s;animation-delay:${-Math.random()*15}s;`;
+    bg.appendChild(p);
+  }
+})();
+
+// ──── TOAST ────
+function toast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2600);
+}
+
+// ──── TABS ────
+const TAB_MAP={register:0,bracket:1,schedule:2,teams:3,organizer:4};
+function switchTab(tab){
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+tab).classList.add('active');
+  document.querySelectorAll('.tab-btn')[TAB_MAP[tab]].classList.add('active');
+  if(tab==='schedule') renderEvents();
+  if(tab==='teams') renderTeams();
+  if(tab==='organizer'){renderOrgPanel();renderBracketPool();}
+}
+
+// ──── YT ────
+function saveYT(){
+  ytUrl=document.getElementById('org-yt-url').value||ytUrl;
+  document.getElementById('yt-nav-link').href=ytUrl;
+  document.getElementById('hero-yt-link').href=ytUrl;
+  toast('✓ YouTube link updated!');
+}
+function saveYTLabel(){
+  ytLabel=document.getElementById('org-yt-label').value||ytLabel;
+  document.getElementById('hero-yt-label').textContent=ytLabel;
+  toast('✓ Button label updated!');
+}
+function saveHeroSub(){
+  heroSub=document.getElementById('org-hero-sub').value||heroSub;
+  document.getElementById('hero-sub-text').textContent=heroSub;
+  toast('✓ Subtitle updated!');
+}
+
+// ──── COUNTDOWN ────
+function saveCountdown(){
+  const val=document.getElementById('org-cd-date').value;
+  if(!val){toast('⚠ Pick a date/time.');return;}
+  countdownTarget=new Date(val);
+  toast('✓ Countdown set!');
+}
+function saveCDName(){
+  cdEventName=document.getElementById('org-cd-name').value||cdEventName;
+  document.getElementById('cd-event-name').textContent=cdEventName;
+  toast('✓ Event name updated!');
+}
+function tickCountdown(){
+  const el={d:document.getElementById('cd-days'),h:document.getElementById('cd-hours'),m:document.getElementById('cd-mins'),s:document.getElementById('cd-secs')};
+  if(!countdownTarget){Object.values(el).forEach(e=>e.textContent='--');return;}
+  const diff=countdownTarget-Date.now();
+  if(diff<=0){Object.values(el).forEach(e=>e.textContent='00');document.getElementById('cd-event-name').textContent='🎉 Event Started!';return;}
+  const d=Math.floor(diff/86400000),h=Math.floor((diff%86400000)/3600000),m=Math.floor((diff%3600000)/60000),s=Math.floor((diff%60000)/1000);
+  el.d.textContent=String(d).padStart(2,'0');el.h.textContent=String(h).padStart(2,'0');el.m.textContent=String(m).padStart(2,'0');el.s.textContent=String(s).padStart(2,'0');
+}
+setInterval(tickCountdown,1000);tickCountdown();
+
+// ──── PRIZES ────
+function renderPrizes(){
+  const typeClass={gold:'gold-card',silver:'silver-card',bronze:'bronze-card'};
+  const rankIcons={gold:'🥇',silver:'🥈',bronze:'🥉'};
+  document.getElementById('prize-grid').innerHTML=prizes.map(p=>`
+    <div class="prize-card ${typeClass[p.type]||''}">
+      <div class="prize-rank">${rankIcons[p.type]||'🌟'}</div>
+      <div class="prize-place">${p.place}</div>
+      <div class="prize-amount">${p.amount}</div>
+      <div class="prize-desc">${p.desc}</div>
+    </div>`).join('');
+}
+function addPrize(){
+  const place=document.getElementById('org-prize-place').value.trim();
+  const amount=document.getElementById('org-prize-amount').value.trim();
+  if(!place||!amount){toast('⚠ Fill in place and prize.');return;}
+  prizes.push({place,amount,desc:document.getElementById('org-prize-desc').value,type:'bloom'});
+  document.getElementById('org-prize-place').value='';
+  document.getElementById('org-prize-amount').value='';
+  document.getElementById('org-prize-desc').value='';
+  renderPrizes();renderOrgPanel();toast('✓ Prize added!');
+}
+function removePrize(i){prizes.splice(i,1);renderPrizes();renderOrgPanel();toast('Prize removed.');}
+
+// ──── EVENTS ────
+const typeColors={'Side Event':'var(--cyan)','Main Match':'var(--bloom)','Opening Ceremony':'var(--gold)','Prize Distribution':'var(--gold)','Fun Event':'var(--green)'};
+function renderEvents(){
+  const el=document.getElementById('event-grid');
+  if(!events.length){el.innerHTML='<div style="color:var(--muted)">No events yet.</div>';return;}
+  el.innerHTML=events.map(e=>`
+    <div class="event-card">
+      <div class="event-card-stripe" style="background:linear-gradient(90deg,${typeColors[e.type]||'var(--bloom)'},transparent)"></div>
+      <div class="event-type-label" style="color:${typeColors[e.type]||'var(--cyan)'}">// ${e.type}</div>
+      <h3>${e.name}</h3><p>${e.desc}</p>
+      <div class="event-meta">
+        ${e.date?`<span>📅 <b>${e.date}</b></span>`:''}
+        ${e.time?`<span>🕐 <b>${e.time}</b></span>`:''}
+      </div>
+    </div>`).join('');
+}
+function addEvent(){
+  const name=document.getElementById('ev-name').value.trim();
+  if(!name){toast('⚠ Enter event name.');return;}
+  events.push({name,type:document.getElementById('ev-type').value,date:document.getElementById('ev-date').value,time:document.getElementById('ev-time').value,desc:document.getElementById('ev-desc').value});
+  document.getElementById('ev-name').value='';document.getElementById('ev-desc').value='';
+  renderEvents();toast(`✓ "${name}" added!`);
+}
+function removeEvent(i){events.splice(i,1);renderEvents();renderOrgPanel();toast('Event removed.');}
+
+// ──── TEAMS ────
+function addPlayer(){
+  if(playerCount>=5){toast('Max 5 players.');return;}
+  playerCount++;
+  const list=document.getElementById('players-list');
+  const row=document.createElement('div');row.className='player-row';
+  row.innerHTML=`<div class="field"><label>Player IGN</label><input type="text" placeholder="Player ${playerCount} IGN" class="ign"></div><div class="field"><label>Role</label><select class="role"><option>Gold</option><option>EXP</option><option>Mid</option><option>Jungler</option><option>Roamer</option></select></div><button class="btn-add" onclick="removePlayer(this)">✕</button>`;
+  list.appendChild(row);
+}
+function removePlayer(btn){btn.closest('.player-row').remove();playerCount=Math.max(1,playerCount-1);}
+function submitRegistration(){
+  const teamName=document.getElementById('reg-team').value.trim();
+  const captain=document.getElementById('reg-captain').value.trim();
+  if(!teamName||!captain){toast('⚠ Fill in team name and captain IGN.');return;}
+  const team={name:teamName,captain,contact:document.getElementById('reg-contact').value,server:document.getElementById('reg-server').value,
+    players:[...document.querySelectorAll('#players-list .player-row')].map((r,i)=>({ign:r.querySelector('.ign').value||`Player ${i+1}`,role:r.querySelector('.role').value})),
+    note:document.getElementById('reg-note').value};
+  teams.push(team);
+  if(!bracketTeams.includes(teamName))bracketTeams.push(teamName);
+  toast(`✓ Team "${teamName}" registered!`);
+  document.getElementById('reg-team').value='';document.getElementById('reg-captain').value='';document.getElementById('reg-contact').value='';document.getElementById('reg-note').value='';
+  document.getElementById('players-list').innerHTML=`<div class="player-row"><div class="field"><label>Player IGN</label><input type="text" placeholder="Player 1 IGN" class="ign"></div><div class="field"><label>Role</label><select class="role"><option>Gold</option><option>EXP</option><option>Mid</option><option>Jungler</option><option>Roamer</option></select></div><button class="btn-add" onclick="removePlayer(this)">✕</button></div>`;
+  playerCount=1;
+}
+function renderTeams(){
+  const el=document.getElementById('teams-list');
+  if(!teams.length){el.innerHTML='<div style="color:var(--muted);font-size:0.85rem">No teams yet.</div>';return;}
+  el.innerHTML=teams.map(t=>`<div class="team-card"><div class="tname">${t.name}</div><div class="pnames"><b style="color:var(--cyan)">Capt:</b> ${t.captain}<br>${t.players.map(p=>`${p.ign} <span style="color:var(--bloom);font-size:0.68rem">[${p.role}]</span>`).join('<br>')}${t.server?`<br><span style="color:var(--muted)">${t.server}</span>`:''}</div></div>`).join('');
+}
+function removeTeam(i){const name=teams[i].name;teams.splice(i,1);bracketTeams=bracketTeams.filter(t=>t!==name);renderTeams();renderOrgPanel();toast('Team removed.');}
+
+// ──── BRACKET ────
+function addTeamToBracket(){
+  const inp=document.getElementById('manual-team');const name=inp.value.trim();if(!name)return;
+  if(!bracketTeams.includes(name))bracketTeams.push(name);inp.value='';renderBracketPool();
+}
+function renderBracketPool(){
+  document.getElementById('bracket-teams-pool').innerHTML=bracketTeams.map(t=>`<div class="pool-tag" onclick="removeBracketTeam('${t}')">🌸 ${t} ✕</div>`).join('');
+}
+function removeBracketTeam(name){bracketTeams=bracketTeams.filter(t=>t!==name);renderBracketPool();}
+function resetBracket(){bracketTeams=[];bracketState=[];renderBracketPool();document.getElementById('bracket-container').innerHTML='<div style="color:var(--muted);font-size:0.85rem;padding:2rem 0;text-align:center;width:100%">Add teams then click <b style="color:var(--bloom)">Generate</b> to build the draw.</div>';}
+function generateBracket(){
+  if(bracketTeams.length<2){toast('⚠ Add at least 2 teams.');return;}
+  const shuffled=[...bracketTeams].sort(()=>Math.random()-0.5);
+  let size=1;while(size<shuffled.length)size*=2;
+  while(shuffled.length<size)shuffled.push(null);
+  const rounds=[];let current=shuffled;
+  while(current.length>1){const matches=[];for(let i=0;i<current.length;i+=2)matches.push([current[i],current[i+1]]);rounds.push(matches);current=matches.map(()=>null);}
+  bracketState=rounds.map(r=>r.map(m=>({a:m[0],b:m[1],winner:null})));
+  renderBracket();
+}
+function renderBracket(){
+  const el=document.getElementById('bracket-container');el.innerHTML='';
+  const roundNames=['Round of '+(bracketState[0].length*2),'Quarter-Finals','Semi-Finals','Grand Final','Champion'];
+  bracketState.forEach((round,ri)=>{
+    const rd=document.createElement('div');rd.className='round';
+    rd.innerHTML=`<div class="round-label">${roundNames[Math.min(ri,roundNames.length-1)]}</div>`;
+    const md=document.createElement('div');md.className='round-matches';
+    round.forEach((match,mi)=>{
+      const m=document.createElement('div');m.className='match';
+      const tA=match.a||'TBD',tB=match.b||'TBD';
+      const wA=match.winner===tA,wB=match.winner===tB;
+      m.innerHTML=`<div class="match-team ${wA?'winner':''} ${!match.a?'tbd':''}" onclick="setWinner(${ri},${mi},'a')"><span>${tA}</span><span class="team-score">${wA?'1':match.winner?'0':'-'}</span></div><div class="match-team ${wB?'winner':''} ${!match.b?'tbd':''}" onclick="setWinner(${ri},${mi},'b')"><span>${tB}</span><span class="team-score">${wB?'1':match.winner?'0':'-'}</span></div>`;
+      md.appendChild(m);
+    });
+    rd.appendChild(md);el.appendChild(rd);
+  });
+}
+function setWinner(ri,mi,side){
+  const match=bracketState[ri][mi];if(!match.a||!match.b)return;
+  const winner=side==='a'?match.a:match.b;match.winner=winner;
+  if(ri+1<bracketState.length){const ni=Math.floor(mi/2),sl=mi%2===0?'a':'b';bracketState[ri+1][ni][sl]=winner;}
+  else toast(`🏆 Champion: ${winner}!`);
+  renderBracket();
+}
+
+// ──── ANNOUNCEMENTS ────
+function addAnnouncement(){
+  const text=document.getElementById('org-announce-text').value.trim();
+  if(!text)return;
+  announcements.push(text);
+  document.getElementById('org-announce-text').value='';
+  renderOrgPanel();updateAnnounceBar();toast('✓ Announcement added!');
+}
+function removeAnnouncement(i){announcements.splice(i,1);renderOrgPanel();updateAnnounceBar();}
+function updateAnnounceBar(){
+  const bar=document.getElementById('announce-bar');
+  if(!announcements.length){bar.style.display='none';return;}
+  bar.style.display='block';bar.textContent='📢 '+announcements[announcements.length-1];
+}
+
+// ──── ORG PANEL ────
+function renderOrgPanel(){
+  // prizes
+  document.getElementById('org-prizes-list').innerHTML=prizes.map((p,i)=>`<div class="org-item"><span class="ilabel">${p.place}<span class="imeta">${p.amount}</span></span><button class="btn-outline small danger" onclick="removePrize(${i})">✕</button></div>`).join('');
+  // announcements
+  document.getElementById('org-announce-list').innerHTML=announcements.map((a,i)=>`<div class="org-item"><span class="ilabel">${a}</span><button class="btn-outline small danger" onclick="removeAnnouncement(${i})">✕</button></div>`).join('')||'<div style="color:var(--muted);font-size:0.78rem">No announcements yet.</div>';
+  // teams
+  document.getElementById('org-teams-list').innerHTML=teams.map((t,i)=>`<div class="org-item"><span class="ilabel">${t.name}<span class="imeta">${t.captain}</span></span><button class="btn-outline small danger" onclick="removeTeam(${i})">✕</button></div>`).join('')||'<div style="color:var(--muted);font-size:0.78rem">No teams yet.</div>';
+  // events
+  document.getElementById('org-events-list').innerHTML=events.map((e,i)=>`<div class="org-item"><span class="ilabel">${e.name}<span class="imeta">${e.type}</span></span><button class="btn-outline small danger" onclick="removeEvent(${i})">✕</button></div>`).join('');
+}
+
+
+let organizerUnlocked=false;
+function openOrganizer(){
+ if(!organizerUnlocked){
+   const pw=prompt('Enter organizer password:');
+   if(pw!=='Demonslayer'){toast('Incorrect password');return;}
+   organizerUnlocked=true;
+ }
+ switchTab('organizer');
+}
+
+// ──── INIT ────
+renderPrizes();
+renderEvents();
+</script>
+</body>
+</html>
